@@ -3,9 +3,9 @@ pipeline {
 
     environment {
         EC2_USER = "ubuntu"                  // Change to your EC2 user (e.g., ec2-user for Amazon Linux)
-        EC2_HOST = "13.127.50.144"      // Replace with your EC2 instance IP
+        EC2_HOST = "13.201.191.29"      // Replace with your EC2 instance IP
         APP_DIR = "/home/ubuntu/ec2-jenkins/app" // Path to app directory on EC2
-        SSH_KEY = "/var/lib/jenkins/psw.pem"    // Path to your EC2 private key
+        SSH_KEY = "/var/lib/jenkins/key.pem"    // Path to your EC2 private key
         APP_PORT = "5000"                    // Flask application port
     }
 
@@ -21,12 +21,12 @@ pipeline {
         script {
             echo "Copying updated application files to EC2..."
             sh '''
-            scp -o StrictHostKeyChecking=no -i /var/lib/jenkins/psw.pem -r app/main.py app/templates ubuntu@13.127.50.144:/home/ubuntu/ec2-jenkins/app/
+            scp -o StrictHostKeyChecking=no -i /var/lib/jenkins/key.pem -r app/main.py app/templates ubuntu@13.201.191.29:/home/ubuntu/ec2-jenkins/app/
             '''
             
             echo "Restarting application on EC2..."
             sh '''
-            ssh -o StrictHostKeyChecking=no -i /var/lib/jenkins/psw.pem ubuntu@13.127.50.144<<EOF
+            ssh -o StrictHostKeyChecking=no -i /var/lib/jenkins/key.pem ubuntu@13.201.191.29<<EOF
             sudo pkill -f gunicorn || echo "Gunicorn process not found"
             cd /home/ubuntu/ec2-jenkins/app
             source /home/ubuntu/ec2-jenkins/venv/bin/activate
